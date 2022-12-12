@@ -1,25 +1,55 @@
-import logo from './logo.svg';
 import './App.css';
+import React, {useEffect, useState} from 'react';
+import mqtt from 'mqtt/dist/mqtt';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [connectionStatus, setConnectionStatus] = useState(false);
+	const [messages, setMessages] = useState([]);
+
+	useEffect(() => {
+		const client = mqtt.connect('http://192.168.3.100:9001');
+		client.on('connect', () => {
+			setConnectionStatus(true);
+			console.log("connected");
+		});
+		client.on('message', (topic, payload, packet) => {
+			console.log("received message");
+			console.log(payload.toString());
+			setMessages((m) => {
+				m.push(payload.toString());
+				return [...m];
+			});
+		});
+
+		client.subscribe('presence', (err) => {
+			if (!err) {
+				client.publish('presence', 'Hello mqtt');
+			}
+		});
+	}, []);
+
+ 	const renderMessages = () => {
+		console.log(messages);
+		return (
+			messages.map((m, index) => {
+				console.log(m);
+				return (
+					<h2 key={index} >
+						{m}
+					</h2>
+				)
+			})
+		);
+	};
+
+	return (
+		<div className="App">
+			<div>
+				Connected: {connectionStatus ? "True" : "False"}
+				{renderMessages()}
+			</div>
+		</div>
+	);
 }
 
 export default App;
