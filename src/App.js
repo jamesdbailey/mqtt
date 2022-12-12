@@ -22,9 +22,9 @@ function App() {
 			});
 		});
 
-		client.subscribe('t', (err) => {
+		client.subscribe('presence', (err) => {
 			if (!err) {
-				client.publish('t', 'Hello mqtt');
+				client.publish('presence', 'Hello mqtt');
 			}
 		});
 	}, []);
