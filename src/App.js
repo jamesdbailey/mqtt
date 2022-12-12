@@ -7,7 +7,8 @@ function App() {
 	const [messages, setMessages] = useState([]);
 
 	useEffect(() => {
-		const client = mqtt.connect('http://192.168.3.100:9001');
+		const client = mqtt.connect('http://test.mosquitto.org:8080');
+		//const client = mqtt.connect('http://192.168.3.100:9001');
 		client.on('connect', () => {
 			setConnectionStatus(true);
 			console.log("connected");
@@ -21,9 +22,9 @@ function App() {
 			});
 		});
 
-		client.subscribe('presence', (err) => {
+		client.subscribe('t', (err) => {
 			if (!err) {
-				client.publish('presence', 'Hello mqtt');
+				client.publish('t', 'Hello mqtt');
 			}
 		});
 	}, []);
